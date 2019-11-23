@@ -62,7 +62,7 @@
 
 <script>
 import AdminNav from "@/components/AdminNav";
-import uuid from "uuid/v4";
+//import uuid from "uuid/v4";
 import adminAPI from './../apis/admin'
 import { Toast } from './../utils/helpers'
 
@@ -90,7 +90,7 @@ async fetchCategories () {
         const response = await adminAPI.categories.get({
         })
            const { data, statusText } = response
-           console.log(data)
+          
         // STEP 3：如果 statusText 不是 OK 的話則進入錯誤處理
         if (statusText !== 'OK') {
           throw new Error(statusText)
@@ -125,48 +125,56 @@ async fetchCategories () {
     
     },*/
    
-async createCategory() {
+async createCategory () {
       try {
-    const response = await adminAPI.categories.get({
-        })
-           const { data, statusText } = response
+        this.isProcessing = true
 
-data.categories.push({
-        id: uuid(),
-        name: this.newCategoryName
-      });
-      console.log(data.categories)
- this.categories = data.categories
- const formData = new FormData(data)
-       const { data2, statusText2 } = await adminAPI.categories.create({
-           formData
+        const { data, statusText } = await adminAPI.categories.create({
+          name: this.newCategoryName
         })
-        
-       // STEP 3: 透過 restaurants.create 方法來向伺服器建立餐廳
-        //await adminAPI.restaurants.create({           form       })
+       
 
-        if (statusText2 !== 'OK' || data2.status !== 'success') {
+        if (statusText !== 'OK' || data.status !== 'success') {
           throw new Error(statusText)
         }
 
-        // STEP 4: 成功的話則轉址到 `/admin/restaurants`
-        this.$router.push({ name: 'admin-categories' })
+        this.categories.push({
+          ...data.category,
+          name: this.newCategoryName,
+          isEditing: false
+        })
+        this.categories
+        this.isProcessing = false
+        this.newCategoryName = '' // 清空原本欄位中的內容
       } catch (error) {
-        // STEP 5: 錯誤處理
+        this.isProcessing = false
         Toast.fire({
           type: 'error',
-          title: '無法建立餐廳，請稍後再試'
+          title: '無法新增餐廳類別，請稍後再試'
         })
       }
     },
 
-    deleteCategory(categoryId) {
-      // TODO: 透過 API 告知伺服器欲刪除的餐廳類別
+  async deleteCategory (categoryId) {
+      try {
+        const { data, statusText } = await adminAPI.categories.delete({
+          categoryId
+        })
 
-      // 將該餐廳類別從陣列中移除
-      this.categories = this.categories.filter(
-        category => category.id !== categoryId
-      );
+        if (statusText !== 'OK' || data.status !== 'success') {
+          throw new Error(statusText)
+        }
+
+        // 將該餐廳類別從陣列中移除
+        this.categories = this.categories.filter(
+          category => category.id !== categoryId
+        )
+      } catch (error) {
+        Toast.fire({
+          type: 'error',
+          title: '無法刪除該餐廳類別，請稍後再試'
+        })
+      }
     },
     toggleIsEditing(categoryId) {
       this.categories = this.categories.map(category => {
@@ -179,9 +187,24 @@ data.categories.push({
         };
       });
     },
-    updateCategory({ categoryId }) {
-      // TODO: 透過 API 去向伺服器更新餐廳類別名稱
-      this.toggleIsEditing(categoryId);
+   async updateCategory ({ categoryId, name }) {
+      try {
+        const { data, statusText } = await adminAPI.categories.update({
+          categoryId,
+          name
+        })
+
+        if (statusText !== 'OK' || data.status !== 'success') {
+          throw new Error(statusText)
+        }
+
+        this.toggleIsEditing(categoryId)
+      } catch (error) {
+        Toast.fire({
+          type: 'error',
+          title: '無法更新餐廳類別，請稍後再試'
+        })
+      }
     },
     handleCancel(categoryId) {
       this.categories = this.categories.map(category => {
