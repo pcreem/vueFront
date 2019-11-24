@@ -91,7 +91,7 @@ export default {
     addFollowing () {
       this.isFollowed = true
     },
-    removeFollowing (userId) {
+    removeFollowing () {
       this.isFollowed = false
     }
   }

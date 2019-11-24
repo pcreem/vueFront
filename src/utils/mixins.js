@@ -1,9 +1,8 @@
-// ./src/utils/mixins.js
 import moment from 'moment'
 
 export const fromNowFilter = {
   filters: {
-    fromNow(datetime) {
+    fromNow (datetime) {
       return datetime ? moment(datetime).fromNow() : '-'
     }
   }
@@ -11,7 +10,7 @@ export const fromNowFilter = {
 
 export const emptyImageFilter = {
   filters: {
-    emptyImage(src) {
+    emptyImage (src) {
       return src || 'https://via.placeholder.com/350x220/DFDFDF?text=No+Image'
     }
   }

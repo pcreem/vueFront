@@ -115,8 +115,9 @@ export default {
       this.followings = profile.Followings
       this.followers = profile.Followers
       this.favoritedRestaurants = profile.FavoritedRestaurants
-      this.comments = profile.Comments
-      } catch (error) {
+      this.comments = profile.Comments//.filter(comment => comment.Restaurant)
+      }
+    catch (error) {
         // STEP 5: 錯誤處理
         Toast.fire({
           type: 'error',
