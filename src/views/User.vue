@@ -1,23 +1,35 @@
-// ./src/views/Restaurants.vue
 <template>
   <div class="container py-5">
-    <NavTabs />
+    <!-- UserProfileCard -->
+    <UserProfileCard
+      :user="user"
+      :is-current-user="currentUser.id === user.id"
+      :initial-is-followed="isFollowed"
+    />
 
-
-      <!-- 餐廳卡片 RestaurantCard-->
-      <UserProfileCard
-      :initial-user="user"
-      />
-
-    <!-- 分頁標籤 RestaurantPagination -->
-  
+    <div class="row">
+      <div class="col-md-4">
+        <!-- UserFollowingsCard -->
+        <UserFollowingsCard :followings="followings" />
+        <!-- UserFollowersCard -->
+        <UserFollowersCard :followers="followers" />
+      </div>
+      <div class="col-md-8">
+        <!-- UserCommentsCard -->
+        <UserCommentsCard :comments="comments" />
+        <!-- UserFavoritedRestaurantsCard -->
+        <UserFavoritedRestaurantsCard :favorited-restaurants="favoritedRestaurants" />
+      </div>
+    </div>
   </div>
 </template>
-<script>
-/* eslint-disable */
 
-import NavTabs from "./../components/NavTabs";
-import UserProfileCard from "./../components/UserProfileCard";
+<script>
+import UserProfileCard from './../components/UserProfileCard'
+import UserFollowingsCard from './../components/UserFollowingsCard'
+import UserFollowersCard from './../components/UserFollowersCard'
+import UserCommentsCard from './../components/UserCommentsCard'
+import UserFavoritedRestaurantsCard from './../components/UserFavoritedRestaurantsCard'
 
 const dummyData = {
   'profile': {
@@ -1193,42 +1205,75 @@ const dummyData = {
   },
   'isFollowed': false
 }
+
+const dummyUser = {
+  currentUser: {
+    id: 1,
+    name: '管理者',
+    email: 'root@example.com',
+    image: 'https://i.pravatar.cc/300',
+    isAdmin: true
+  },
+  isAuthenticated: true
+}
+
 export default {
+  name: 'User',
   components: {
-    NavTabs,
     UserProfileCard,
+    UserFollowingsCard,
+    UserFollowersCard,
+    UserCommentsCard,
+    UserFavoritedRestaurantsCard
   },
-  data() {
+  data () {
     return {
-      name: '',
-      email: '',
-      image: '',
-      Comments: [],
-      FavoritedRestaurants: [],
-      Followers: [],
-      Followings: []
-    };
+      user: {
+        id: 0,
+        image: '',
+        name: '',
+        email: '',
+        followingsLength: 0,
+        followersLength: 0,
+        commentsLength: 0,
+        favoritedRestaurantsLength: 0
+      },
+      isFollowed: false,
+      followings: [],
+      followers: [],
+      comments: [],
+      favoritedRestaurants: [],
+      currentUser: dummyUser.currentUser
+    }
   },
-  created() {
-    const { userId } = this.$route.query;
-    this.fetchUser({ userId });
+  created () {
+    this.fetchUser()
+    console.log('this.currentUser.id', this.currentUser.id, this.user.id)
   },
- 
-methods: {
-    fetchUser (userId) {
-      console.log('fetchUser id: ', userId)
+  methods: {
+    fetchUser () {
+      const { profile, isFollowed } = dummyData
 
       this.user = {
-        id: dummyData.profile.id,
-        name: dummyData.profile.name,
-        email: dummyData.profile.email,
-        image: dummyData.profile.image,
-            Comments:dummyData.profile.Comments,
-      FavoritedRestaurants: dummyData.profile.FavoritedRestaurants,
-      Followers:dummyData.profile.Followers,
-      Followings: dummyData.profile.Followings
+        ...this.user,
+        id: profile.id,
+        image: profile.image,
+        name: profile.name,
+        email: profile.email,
+        followingsLength: profile.Followings.length,
+        followersLength: profile.Followers.length,
+        commentsLength: profile.Comments.length,
+        favoritedRestaurantsLength: profile.FavoritedRestaurants.length
       }
+
+      this.isFollowed = isFollowed
+
+      this.followings = profile.Followings
+      this.followers = profile.Followers
+      this.favoritedRestaurants = profile.FavoritedRestaurants
+      this.comments = profile.Comments
     }
   }
 }
+
 </script>

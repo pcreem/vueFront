@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import NotFound from '../views/NotFound.vue'
 import SignIn from '../views/SignIn.vue'
 import Restaurants from '../views/Restaurants.vue'
+//import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -93,5 +94,6 @@ const router = new VueRouter({
   linkExactActiveClass: 'active',
   routes
 })
+
 
 export default router
