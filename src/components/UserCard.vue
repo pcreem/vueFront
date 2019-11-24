@@ -40,15 +40,23 @@ export default {
       user: this.initialUser
     };
   },
-  methods: {
-    addFollow() {
+  watch: {
+    initialUser (user) {
       this.user = {
+        ...this.user,
+        ...user
+      }
+    }
+  },
+  methods: {
+    async addFollow() {
+      this.user = await {
         ...this.user,
         isFollowed: true
       };
     },
-    deleteFollow() {
-      this.user = {
+    async deleteFollow() {
+      this.user = await {
         ...this.user,
         isFollowed: false
       };
